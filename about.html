@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NeuraMesh | About &amp; Contact</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#171f33",
+                    "error-container": "#93000a",
+                    "on-background": "#dae2fd",
+                    "primary": "#4edea3",
+                    "outline-variant": "#3c4a42",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "secondary-fixed-dim": "#e9c349",
+                    "secondary": "#e9c349",
+                    "primary-fixed-dim": "#4edea3",
+                    "gold-leaf": "#F59E0B",
+                    "on-primary-fixed": "#002113",
+                    "tertiary-container": "#23acf1",
+                    "on-tertiary-fixed": "#001e2f",
+                    "surface-bright": "#31394d",
+                    "inverse-surface": "#dae2fd",
+                    "surface-container-high": "#222a3d",
+                    "secondary-container": "#af8d11",
+                    "on-secondary": "#3c2f00",
+                    "on-surface-variant": "#bbcabf",
+                    "surface-dim": "#0b1326",
+                    "surface-tint": "#4edea3",
+                    "on-secondary-fixed-variant": "#574500",
+                    "on-error": "#690005",
+                    "primary-container": "#10b981",
+                    "outline": "#86948a",
+                    "tertiary-fixed": "#c9e6ff",
+                    "inverse-on-surface": "#283044",
+                    "tertiary": "#89ceff",
+                    "on-surface": "#dae2fd",
+                    "on-error-container": "#ffdad6",
+                    "charcoal-surface": "#1E293B",
+                    "surface-container-low": "#131b2e",
+                    "secondary-fixed": "#ffe088",
+                    "emerald-glow": "rgba(16, 185, 129, 0.15)",
+                    "on-tertiary-container": "#003d59",
+                    "surface-variant": "#2d3449",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "on-tertiary": "#00344d",
+                    "on-secondary-fixed": "#241a00",
+                    "surface-container-lowest": "#060e20",
+                    "on-primary-container": "#00422b",
+                    "surface": "#0b1326",
+                    "obsidian-base": "#020617",
+                    "on-primary-fixed-variant": "#005236",
+                    "inverse-primary": "#006c49",
+                    "on-primary": "#003824",
+                    "primary-fixed": "#6ffbbe",
+                    "error": "#ffb4ab",
+                    "on-secondary-container": "#342800",
+                    "surface-container-highest": "#2d3449",
+                    "background": "#0b1326"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "container-max": "1440px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "display-lg-mobile": ["Space Grotesk"],
+                    "headline-lg": ["Space Grotesk"],
+                    "headline-md": ["Space Grotesk"],
+                    "display-lg": ["Space Grotesk"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .emerald-glow-border:hover {
+            border-color: #4edea3;
+            box-shadow: 0 0 20px rgba(78, 222, 163, 0.15);
+        }
+        .animate-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-obsidian-base text-on-surface selection:bg-primary/30">
+<nav class="fixed top-0 w-full z-50 bg-charcoal-surface/60 backdrop-blur-xl border-b border-white/5 shadow-2xl h-20 transition-all duration-500">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-full">
+<div class="flex items-center gap-2">
+<img alt="NeuraMesh Logo" class="h-7 md:h-10 object-contain" src="assets/images/logo-nav.png"/>
+</div>
+<div class="flex items-center gap-4 md:gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 font-body-md text-sm md:text-body-md" href="index.html">Home</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 font-body-md text-sm md:text-body-md" href="pricing.html">Pricing</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-sm md:text-body-md hover:opacity-80 transition-opacity" href="about.html">About</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 font-body-md text-sm md:text-body-md" href="collaboration.html">Collaboration</a>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<section class="relative min-h-screen flex flex-col lg:flex-row overflow-hidden">
+<div class="w-full lg:w-1/2 flex items-center px-margin-mobile lg:px-margin-desktop py-24 z-10">
+<div class="max-w-xl animate-reveal" id="about-content">
+<span class="font-label-sm text-label-sm text-primary mb-4 block uppercase tracking-widest">Our Philosophy</span>
+<h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg mb-8 leading-tight">We <span class="text-primary">Integrate, Automate</span> &amp; Simplify Smart Living.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-12">
+                        At NeuraMesh, we design intelligent environments that adapt to you and not the other way around. Powered by open-source platforms and driven by a privacy-first mindset, our solutions offer unmatched flexibility - no brand lock-ins, no cloud dependencies. Every setup is crafted to suit your space, your needs, and your lifestyle.
+                    </p>
+<div class="grid grid-cols-3 gap-8 pt-8 border-t border-white/10">
+<div class="text-center">
+<h4 class="font-display-lg text-headline-lg text-primary">3+</h4>
+<p class="font-label-sm text-[10px] text-on-surface-variant uppercase">Spaces Transformed</p>
+</div>
+<div class="text-center">
+<h4 class="font-display-lg text-headline-lg text-primary">90%</h4>
+<p class="font-label-sm text-[10px] text-on-surface-variant uppercase">Client Satisfaction</p>
+</div>
+<div class="text-center">
+<h4 class="font-display-lg text-headline-lg text-primary">100+</h4>
+<p class="font-label-sm text-[10px] text-on-surface-variant uppercase">Devices Integrated</p>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-1/2 relative min-h-[400px] lg:min-h-screen">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out hover:scale-105" style="background-image: url('assets/images/about-hero.jpg')">
+<div class="absolute inset-0 bg-gradient-to-r from-obsidian-base via-transparent to-transparent lg:from-obsidian-base"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-obsidian-base lg:hidden"></div>
+</div>
+<div class="absolute bottom-12 left-12 right-12 lg:left-auto lg:right-12 glass-panel p-8 rounded-xl max-w-lg animate-reveal">
+<span class="font-label-sm text-label-sm text-secondary mb-4 block uppercase">Our Mission</span>
+<p class="font-headline-md text-headline-md mb-4 text-on-surface">To make smart living accessible, private, and truly personal for everyone.</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Smarter spaces, built around people.</p>
+</div>
+</div>
+</section>
+<section class="py-32 bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="text-center mb-20 animate-reveal">
+<span class="font-label-sm text-label-sm text-primary mb-4 block uppercase">The NeuraMesh Core</span>
+<h2 class="font-display-lg text-headline-lg lg:text-display-lg-mobile mb-6">Our Values</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mx-auto">
+                        We build on open-source foundations to ensure transparency and flexibility, while keeping your privacy at the forefront through local-first control.
+                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<div class="glass-panel p-8 rounded-2xl emerald-glow-border transition-all animate-reveal">
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="terminal">terminal</span>
+<h3 class="font-headline-md text-headline-md mb-4">Open By Design</h3>
+<p class="font-body-md text-on-surface-variant">Solutions run on open-source tech, ensuring full transparency and endless possibilities.</p>
+</div>
+<div class="glass-panel p-8 rounded-2xl emerald-glow-border transition-all animate-reveal">
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="lock_person">lock_person</span>
+<h3 class="font-headline-md text-headline-md mb-4">Built for Privacy</h3>
+<p class="font-body-md text-on-surface-variant">Designed with local control in mind. Your smart home, your data — always private.</p>
+</div>
+<div class="glass-panel p-8 rounded-2xl emerald-glow-border transition-all animate-reveal">
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="person_pin">person_pin</span>
+<h3 class="font-headline-md text-headline-md mb-4">Built Around You</h3>
+<p class="font-body-md text-on-surface-variant">No templates. No one-size-fits-all. Just smart automation that feels personal.</p>
+</div>
+<div class="glass-panel p-8 rounded-2xl emerald-glow-border transition-all animate-reveal">
+<span class="material-symbols-outlined text-primary text-4xl mb-6" data-icon="hub">hub</span>
+<h3 class="font-headline-md text-headline-md mb-4">Open Compatibility</h3>
+<p class="font-body-md text-on-surface-variant">Integrates with all major smart devices — no ecosystem restrictions.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 bg-obsidian-base">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="flex flex-col lg:flex-row justify-between items-end mb-20 animate-reveal">
+<div>
+<span class="font-label-sm text-label-sm text-primary mb-4 block uppercase">Architects of Intelligence</span>
+<h2 class="font-display-lg text-display-lg-mobile">Our Team</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-4">Driven by purpose, powered by people.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl">
+<div class="group animate-reveal">
+<div class="relative overflow-hidden rounded-2xl aspect-square mb-6">
+<img alt="Sanika Joshi" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="assets/images/team-sanika.jpg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-obsidian-base/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<h3 class="font-headline-lg text-headline-lg">Sanika Joshi</h3>
+<p class="font-label-sm text-primary uppercase tracking-widest">Founder</p>
+</div>
+<div class="group animate-reveal">
+<div class="relative overflow-hidden rounded-2xl aspect-square mb-6">
+<img alt="Pranjal Joshi" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="assets/images/team-pranjal.jpg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-obsidian-base/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<h3 class="font-headline-lg text-headline-lg">Pranjal Joshi</h3>
+<p class="font-label-sm text-primary uppercase tracking-widest">Mentor</p>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-surface-dim relative py-32 overflow-hidden border-t border-white/5" id="contact">
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4"></div>
+<div class="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/4"></div>
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+<div class="lg:col-span-5 flex flex-col justify-center animate-reveal">
+<h2 class="font-display-lg text-display-lg-mobile lg:text-headline-lg mb-4">Ideate. Integrate. <span class="text-primary italic">Automate.</span></h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10">
+                        Ready to transcend the ordinary? Let our team of cyber-architects build the foundation of your future.
+                    </p>
+<div class="space-y-6">
+<a class="flex items-center gap-4 group p-4 rounded-xl hover:bg-white/5 transition-all" href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Meeting+with+NeuraMesh&details=Let%E2%80%99s+connect+to+discuss+smart+home+automation.&location=https://meet.google.com/&add=neurameshindia@gmail.com" target="_blank">
+<div class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container border border-outline-variant group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="calendar_month">calendar_month</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Schedule a Meet</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Sync with our specialists</p>
+</div>
+</a>
+<div class="flex items-center gap-4 p-4">
+<div class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container border border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="alternate_email">alternate_email</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Inquiries</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">neurameshindia@gmail.com</p>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+<section class="py-32 bg-obsidian-base">
+<div class="max-w-container-max mx-auto px-margin-desktop text-center animate-reveal">
+<div class="inline-block p-px rounded-full bg-gradient-to-r from-primary to-secondary mb-8">
+<div class="bg-obsidian-base px-6 py-2 rounded-full">
+<span class="font-label-sm text-label-sm text-primary uppercase">Transform Your Reality</span>
+</div>
+</div>
+<h2 class="font-display-lg text-display-lg-mobile lg:text-display-lg mb-12 max-w-4xl mx-auto">Your Smart Home, <br/><span class="text-secondary">let's make it happen.</span></h2>
+
+</div>
+</section>
+</main>
+<footer class="w-full py-16 bg-surface-container-lowest border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter max-w-container-max mx-auto px-margin-desktop">
+<div class="col-span-1 md:col-span-1">
+<img alt="NeuraMesh" class="h-8 w-auto mb-6" src="assets/images/logo-nav.png"/>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                    Engineering the future of domestic intelligence.
+                </p>
+<div class="flex gap-4">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined" data-icon="share">share</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined" data-icon="language">language</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-label-sm text-label-sm text-on-surface uppercase mb-6">Explore</h4>
+<ul class="space-y-4">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-gold-leaf hover:translate-x-1 transition-all inline-block" href="index.html">Home</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-gold-leaf hover:translate-x-1 transition-all inline-block" href="pricing.html">Pricing</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-gold-leaf hover:translate-x-1 transition-all inline-block" href="collaboration.html">Collaboration</a></li>
+</ul>
+</div>
+
+<div class="text-right flex flex-col justify-between">
+<p class="font-body-md text-body-md text-on-surface-variant">© <span id="year"></span> NeuraMesh Systems. All rights reserved.</p>
+<div class="mt-8 md:mt-0">
+<button class="bg-surface-container-high p-4 rounded-full hover:bg-primary/20 transition-all" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<span class="material-symbols-outlined text-primary" data-icon="arrow_upward">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-reveal').forEach(el => observer.observe(el));
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body></html>
