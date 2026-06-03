@@ -7,7 +7,7 @@ This skill describes how to update the NeuraMesh static website hosted on GitHub
 ## Prerequisites
 
 - GitHub CLI (`gh`) authenticated as `pranjal-joshi`
-- Local repo: `C:\Users\Pranjal.Joshi\Documents\Personal\NeuraMesh\neuramesh-site`
+- Local repo: the repository root (working directory)
 - Remote repo: `github.com/pranjal-joshi/neuramesh.in`
 - Cloudflare DNS: `neuramesh.in` CNAME → `pranjal-joshi.github.io` (proxied)
 - Cloudflare SSL/TLS: **Full**
@@ -16,7 +16,7 @@ This skill describes how to update the NeuraMesh static website hosted on GitHub
 
 ### 1. Make changes to site files
 
-All site files are under `C:\Users\Pranjal.Joshi\Documents\Personal\NeuraMesh\neuramesh-site\`
+All site files are in the repository root
 
 - **HTML pages**: `index.html`, `pricing.html`, `about.html`, `collaboration.html`, `404.html`
 - **Images**: `assets/images/`
@@ -26,7 +26,6 @@ All site files are under `C:\Users\Pranjal.Joshi\Documents\Personal\NeuraMesh\ne
 ### 2. Stage, commit, and push
 
 ```powershell
-Set-Location -LiteralPath "C:\Users\Pranjal.Joshi\Documents\Personal\NeuraMesh\neuramesh-site"
 git add -A
 git commit -m "description of changes"
 git push
