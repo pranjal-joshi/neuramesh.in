@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NeuraMesh | Your Home, Intelligently Alive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface-container": "#171f33","obsidian-base": "#020617",
+          "primary": "#4edea3","secondary": "#e9c349",
+          "on-background": "#dae2fd","on-surface-variant": "#bbcabf",
+          "surface-dim": "#0b1326","background": "#0b1326",
+          "charcoal-surface": "#1E293B","surface-container-low": "#131b2e"
+        },
+        fontFamily: {
+          "body-md": ["Manrope"],"label-sm": ["JetBrains Mono"],
+          "display-lg": ["Space Grotesk"],"headline-lg": ["Space Grotesk"],
+          "headline-md": ["Space Grotesk"],"body-lg": ["Manrope"]
+        },
+        fontSize: {
+          "body-md": ["16px",{"lineHeight":"1.6","fontWeight":"400"}],
+          "label-sm": ["12px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"500"}],
+          "display-lg-mobile": ["40px",{"lineHeight":"1.2","fontWeight":"700"}],
+          "headline-lg": ["32px",{"lineHeight":"1.3","fontWeight":"600"}],
+          "headline-md": ["24px",{"lineHeight":"1.4","fontWeight":"600"}],
+          "display-lg": ["64px",{"lineHeight":"1.1","letterSpacing":"-0.02em","fontWeight":"700"}],
+          "body-lg": ["18px",{"lineHeight":"1.6","fontWeight":"400"}]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { overflow: hidden; margin: 0; }
+  .glass-panel {
+    background: rgba(30,41,59,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+  }
+  .glass-panel:hover {
+    background: rgba(30,41,59,0.6); border-color: rgba(78,222,163,0.2);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 20px rgba(78,222,163,0.05);
+  }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+  @keyframes sweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
+  .glow-sweep::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(78,222,163,0.06), transparent);
+    animation: sweep 5s infinite linear; pointer-events: none;
+  }
+  @keyframes fade-up { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-down { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-30px); } }
+  @keyframes scale-in { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+  .anim-float { animation: float 4s ease-in-out infinite; }
+  @keyframes pulse-glow { 0%,100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.2); } }
+  .mesh-pulse { animation: pulse-glow 3s ease-in-out infinite; transform-origin: center; }
+  @keyframes data-flow { 0% { stroke-dashoffset: 160; } 100% { stroke-dashoffset: 0; } }
+  .flow-line { animation: data-flow 2.5s linear infinite; }
+  @keyframes node-glow { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+  .node-pulse { animation: node-glow 2s ease-in-out infinite; }
+
+  #deck {
+    transition: transform 0.7s cubic-bezier(0.65,0,0.35,1);
+    will-change: transform;
+  }
+  .slide { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
+  .slide-inner { max-width: 1200px; width: 100%; margin: 0 auto; }
+  .slide-content > * { opacity: 0; transform: translateY(20px); transition: none; }
+  .slide.active .slide-content > * { animation: fade-up 0.6s ease-out forwards; }
+  .slide.active .slide-content > *:nth-child(1) { animation-delay: 0.1s; }
+  .slide.active .slide-content > *:nth-child(2) { animation-delay: 0.2s; }
+  .slide.active .slide-content > *:nth-child(3) { animation-delay: 0.3s; }
+  .slide.active .slide-content > *:nth-child(4) { animation-delay: 0.4s; }
+  .slide.active .slide-content > *:nth-child(5) { animation-delay: 0.5s; }
+  .slide.active .slide-content > *:nth-child(6) { animation-delay: 0.6s; }
+  .slide.active .slide-content > *:nth-child(7) { animation-delay: 0.7s; }
+  .slide.active .slide-content > *:nth-child(8) { animation-delay: 0.8s; }
+  .slide.active .slide-content > *:nth-child(9) { animation-delay: 0.9s; }
+
+  .nav-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(30,41,59,0.6); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s ease;
+    color: rgba(255,255,255,0.6);
+  }
+  .nav-btn:hover { background: rgba(78,222,163,0.2); color: #4edea3; }
+  .nav-btn:active { transform: scale(0.9); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 0.3s ease; cursor: pointer; }
+  .dot.active { background: #4edea3; width: 24px; border-radius: 4px; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 1rem; align-items: center; padding-top: 3.5rem; }
+    .slide-inner { max-width: 100%; }
+    .desktop-nav { display: none !important; }
+    .glass-panel { padding: 1rem !important; }
+    h1, h2 { word-break: break-word; }
+    .slide.active .slide-content > * { animation-duration: 0.4s; }
+    .nav-btn { width: 36px; height: 36px; }
+  }
+  @media (max-width: 480px) {
+    .slide { padding: 0.75rem; padding-top: 3rem; }
+    .glass-panel { padding: 0.75rem !important; border-radius: 16px !important; }
+    .slide-content .glass-panel.p-10 { padding: 1.5rem !important; }
+    a.glass-panel, a.bg-primary { padding: 0.75rem 1rem !important; font-size: 0.875rem !important; }
+    .grid.gap-3 { gap: 0.5rem; }
+  }
+</style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary selection:text-obsidian-base font-body-md">
+<div class="fixed inset-0 pointer-events-none" style="background-image: radial-gradient(circle at 20% 50%, rgba(78,222,163,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(233,195,73,0.03) 0%, transparent 50%);"></div>
+<div class="fixed inset-0 bg-gradient-to-b from-obsidian-base via-background to-obsidian-base opacity-90 -z-10 pointer-events-none"></div>
+
+<!-- Slide container -->
+<div id="deck">
+  <!-- SLIDE 0: Hero -->
+  <section class="slide active" data-index="0">
+    <div class="slide-inner slide-content text-center">
+      <img alt="NeuraMesh" class="h-10 md:h-16 object-contain mx-auto mb-6 md:mb-8" src="assets/images/logo-nav.png"/>
+      <div class="inline-flex items-center gap-2 glass-panel px-5 py-2 rounded-full mb-8 text-xs md:text-sm text-on-surface-variant border-white/5">
+        <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+        Privacy-first. Local-first. Yours.
+      </div>
+      <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-6 leading-[1.1] tracking-tight">
+        Your Home,<br/><span class="text-primary">Intelligently Alive</span>
+      </h1>
+      <p class="font-body-lg text-body-md md:text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
+        Presence-aware automation that disappears into your lifestyle. No apps. No subscriptions. No cloud dependency. Just a home that quietly understands.
+      </p>
+      <button onclick="next(); return false;" class="bg-primary text-obsidian-base px-10 py-4 rounded-2xl font-bold text-base md:text-lg hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 inline-flex items-center justify-center gap-2 cursor-pointer">
+        <span class="material-symbols-outlined text-xl">arrow_forward</span> Get Started
+      </button>
+      <div class="mt-10 flex items-center justify-center gap-8 md:gap-12 text-on-surface-variant text-xs md:text-sm">
+        <span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> No renovation</span>
+        <span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Works offline</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 1: Problem -->
+  <section class="slide" data-index="1">
+    <div class="slide-inner slide-content text-center">
+      <div>
+        <span class="font-label-sm text-label-sm text-secondary tracking-widest uppercase mb-4 block">The Reality Check</span>
+        <h2 class="font-headline-lg text-display-lg-mobile md:text-headline-lg mb-4">Why Most Smart Homes <span class="text-secondary">Fall Short</span></h2>
+        <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-2xl mx-auto mb-12">The promise was convenience. The reality? Fragmented, fragile, and frustrating.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-gutter">
+        <div class="glass-panel p-8 md:p-10 rounded-3xl text-center">
+          <div class="w-16 h-16 mx-auto bg-red-500/10 rounded-2xl flex items-center justify-center mb-6"><span class="material-symbols-outlined text-red-400 text-3xl">apps_outage</span></div>
+          <h3 class="font-headline-md text-headline-md mb-3 text-white">App Overload</h3>
+          <p class="text-on-surface-variant text-body-md">One app for lights, another for AC, a third for curtains. Your phone becomes a remote control graveyard.</p>
+        </div>
+        <div class="glass-panel p-8 md:p-10 rounded-3xl text-center">
+          <div class="w-16 h-16 mx-auto bg-red-500/10 rounded-2xl flex items-center justify-center mb-6"><span class="material-symbols-outlined text-red-400 text-3xl">wifi_off</span></div>
+          <h3 class="font-headline-md text-headline-md mb-3 text-white">Internet Dependency</h3>
+          <p class="text-on-surface-variant text-body-md">Internet goes down, so does your smart home. A paperweight dressed in plastic.</p>
+        </div>
+        <div class="glass-panel p-8 md:p-10 rounded-3xl text-center" style="transition-delay:0.3s">
+          <div class="w-16 h-16 mx-auto bg-red-500/10 rounded-2xl flex items-center justify-center mb-6"><span class="material-symbols-outlined text-red-400 text-3xl">lock_open</span></div>
+          <h3 class="font-headline-md text-headline-md mb-3 text-white">Privacy Concerns</h3>
+          <p class="text-on-surface-variant text-body-md">Your data lives on someone else's server. Every click, every routine — tracked and monetized.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: Bridge -->
+  <section class="slide" data-index="2">
+    <div class="slide-inner max-w-4xl mx-auto slide-content text-center">
+      <div class="glass-panel p-8 md:p-12 rounded-[32px] md:rounded-[40px] border-primary/10 relative overflow-hidden">
+        <svg viewBox="0 0 500 350" class="w-full max-w-lg mx-auto mb-2 md:mb-4" fill="none">
+          <defs>
+            <radialGradient id="hub-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4edea3" stop-opacity="0.6"/><stop offset="100%" stop-color="#4edea3" stop-opacity="0"/></radialGradient>
+            <radialGradient id="node-glow-1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4edea3" stop-opacity="0.4"/><stop offset="100%" stop-color="#4edea3" stop-opacity="0"/></radialGradient>
+            <radialGradient id="node-glow-2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#e9c349" stop-opacity="0.4"/><stop offset="100%" stop-color="#e9c349" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="250" cy="175" r="90" fill="url(#hub-glow)" class="mesh-pulse"/>
+          <circle cx="250" cy="175" r="60" fill="url(#hub-glow)" class="mesh-pulse" style="animation-delay:1s"/>
+          <!-- Mesh connections between nodes -->
+          <line x1="130" y1="75" x2="370" y2="75" stroke="#4edea3" stroke-width="0.5" opacity="0.15"/>
+          <line x1="370" y1="75" x2="420" y2="200" stroke="#4edea3" stroke-width="0.5" opacity="0.15"/>
+          <line x1="420" y1="200" x2="330" y2="300" stroke="#4edea3" stroke-width="0.5" opacity="0.15"/>
+          <line x1="330" y1="300" x2="170" y2="300" stroke="#4edea3" stroke-width="0.5" opacity="0.15"/>
+          <line x1="170" y1="300" x2="80" y2="200" stroke="#4edea3" stroke-width="0.5" opacity="0.15"/>
+          <line x1="80" y1="200" x2="130" y2="75" stroke="#4edea3" stroke-width="0.5" opacity="0.15"/>
+          <!-- Data flow lines: hub to nodes -->
+          <g stroke-width="1.5" stroke-dasharray="6 8" opacity="0.7">
+            <line x1="250" y1="175" x2="130" y2="75" stroke="#4edea3" class="flow-line" style="animation-delay:0s"/>
+            <line x1="250" y1="175" x2="370" y2="75" stroke="#e9c349" class="flow-line" style="animation-delay:0.4s"/>
+            <line x1="250" y1="175" x2="420" y2="200" stroke="#4edea3" class="flow-line" style="animation-delay:0.8s"/>
+            <line x1="250" y1="175" x2="330" y2="300" stroke="#e9c349" class="flow-line" style="animation-delay:1.2s"/>
+            <line x1="250" y1="175" x2="170" y2="300" stroke="#4edea3" class="flow-line" style="animation-delay:1.6s"/>
+            <line x1="250" y1="175" x2="80" y2="200" stroke="#e9c349" class="flow-line" style="animation-delay:2s"/>
+          </g>
+          <!-- Hub core -->
+          <circle cx="250" cy="175" r="22" fill="#020617" stroke="#4edea3" stroke-width="2"/>
+          <circle cx="250" cy="175" r="8" fill="#4edea3"/>
+          <circle cx="244" cy="169" r="3" fill="rgba(255,255,255,0.3)"/>
+          <!-- Node 1: Light - top left -->
+          <g class="anim-float" style="animation-delay:0s"><circle cx="130" cy="75" r="18" fill="#020617" stroke="#4edea3" stroke-width="1.5"/><circle cx="130" cy="75" r="14" fill="url(#node-glow-1)" class="node-pulse"/><circle cx="130" cy="75" r="6" fill="#4edea3"/><text x="130" y="103" text-anchor="middle" fill="#bbcabf" font-size="9" font-family="Manrope,sans-serif">Light</text></g>
+          <!-- Node 2: Climate - top right -->
+          <g class="anim-float" style="animation-delay:0.6s"><circle cx="370" cy="75" r="18" fill="#020617" stroke="#e9c349" stroke-width="1.5"/><circle cx="370" cy="75" r="14" fill="url(#node-glow-2)" class="node-pulse"/><circle cx="370" cy="75" r="6" fill="#e9c349"/><text x="370" y="103" text-anchor="middle" fill="#bbcabf" font-size="9" font-family="Manrope,sans-serif">Climate</text></g>
+          <!-- Node 3: Lock - right -->
+          <g class="anim-float" style="animation-delay:1.2s"><circle cx="420" cy="200" r="18" fill="#020617" stroke="#4edea3" stroke-width="1.5"/><circle cx="420" cy="200" r="14" fill="url(#node-glow-1)" class="node-pulse"/><circle cx="420" cy="200" r="6" fill="#4edea3"/><text x="420" y="228" text-anchor="middle" fill="#bbcabf" font-size="9" font-family="Manrope,sans-serif">Lock</text></g>
+          <!-- Node 4: Camera - bottom right -->
+          <g class="anim-float" style="animation-delay:1.8s"><circle cx="330" cy="300" r="18" fill="#020617" stroke="#e9c349" stroke-width="1.5"/><circle cx="330" cy="300" r="14" fill="url(#node-glow-2)" class="node-pulse"/><circle cx="330" cy="300" r="6" fill="#e9c349"/><text x="330" y="328" text-anchor="middle" fill="#bbcabf" font-size="9" font-family="Manrope,sans-serif">Camera</text></g>
+          <!-- Node 5: Curtain - bottom left -->
+          <g class="anim-float" style="animation-delay:2.4s"><circle cx="170" cy="300" r="18" fill="#020617" stroke="#4edea3" stroke-width="1.5"/><circle cx="170" cy="300" r="14" fill="url(#node-glow-1)" class="node-pulse"/><circle cx="170" cy="300" r="6" fill="#4edea3"/><text x="170" y="328" text-anchor="middle" fill="#bbcabf" font-size="9" font-family="Manrope,sans-serif">Curtain</text></g>
+          <!-- Node 6: Sensor - left -->
+          <g class="anim-float" style="animation-delay:3s"><circle cx="80" cy="200" r="18" fill="#020617" stroke="#e9c349" stroke-width="1.5"/><circle cx="80" cy="200" r="14" fill="url(#node-glow-2)" class="node-pulse"/><circle cx="80" cy="200" r="6" fill="#e9c349"/><text x="80" y="228" text-anchor="middle" fill="#bbcabf" font-size="9" font-family="Manrope,sans-serif">Sensor</text></g>
+        </svg>
+        <span class="font-label-sm text-label-sm text-primary tracking-widest uppercase mb-2 block">There's a Better Way</span>
+        <h2 class="font-headline-lg text-2xl md:text-3xl mb-4">What if your home simply <span class="text-primary italic">understood?</span></h2>
+        <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-xl mx-auto">No remotes. No apps. No learning curve. Just spaces that respond to your presence — naturally.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: Solution -->
+  <section class="slide" data-index="3">
+    <div class="slide-inner slide-content text-center">
+      <div>
+        <img alt="NeuraMesh" class="h-6 md:h-8 object-contain mx-auto mb-4" src="assets/images/logo-nav.png"/>
+        <h2 class="font-headline-lg text-display-lg-mobile md:text-headline-lg mb-4">The Home Intelligence You've Been <span class="text-primary">Waiting For</span></h2>
+        <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-2xl mx-auto mb-8 md:mb-12">A unified mesh that ties every device together — intelligently, privately, and permanently.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-gutter">
+        <div class="glass-panel p-4 md:p-8 rounded-2xl md:rounded-3xl text-center">
+          <div class="w-12 h-12 md:w-14 md:h-14 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center mb-3 md:mb-5 anim-float" style="animation-delay:0s"><span class="material-symbols-outlined text-primary text-2xl md:text-3xl">radar</span></div>
+          <h4 class="font-headline-md text-sm md:text-headline-md mb-1 md:mb-2 text-white">Presence Sensing</h4>
+          <p class="text-xs md:text-sm text-on-surface-variant">Knows where you are. Adjusts lights, climate, and music — no voice command needed.</p>
+        </div>
+        <div class="glass-panel p-4 md:p-8 rounded-2xl md:rounded-3xl text-center">
+          <div class="w-12 h-12 md:w-14 md:h-14 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center mb-3 md:mb-5 anim-float" style="animation-delay:0.3s"><span class="material-symbols-outlined text-primary text-2xl md:text-3xl">home</span></div>
+          <h4 class="font-headline-md text-sm md:text-headline-md mb-1 md:mb-2 text-white">Fully Local</h4>
+          <p class="text-xs md:text-sm text-on-surface-variant">Runs on your network. Zero cloud dependency. Your home, your data.</p>
+        </div>
+        <div class="glass-panel p-4 md:p-8 rounded-2xl md:rounded-3xl text-center">
+          <div class="w-12 h-12 md:w-14 md:h-14 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center mb-3 md:mb-5 anim-float" style="animation-delay:0.6s"><span class="material-symbols-outlined text-primary text-2xl md:text-3xl">device_hub</span></div>
+          <h4 class="font-headline-md text-sm md:text-headline-md mb-1 md:mb-2 text-white">Open Ecosystem</h4>
+          <p class="text-xs md:text-sm text-on-surface-variant">Works with Zigbee, Matter, Z-Wave, Wi-Fi, and 500+ devices. No brand lock-in.</p>
+        </div>
+        <div class="glass-panel p-4 md:p-8 rounded-2xl md:rounded-3xl text-center">
+          <div class="w-12 h-12 md:w-14 md:h-14 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center mb-3 md:mb-5 anim-float" style="animation-delay:0.9s"><span class="material-symbols-outlined text-primary text-2xl md:text-3xl">bolt</span></div>
+          <h4 class="font-headline-md text-sm md:text-headline-md mb-1 md:mb-2 text-white">Clean Setup</h4>
+          <p class="text-xs md:text-sm text-on-surface-variant">No structural changes. Your space stays beautiful — we just make it smarter.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: How It Works -->
+  <section class="slide" data-index="4">
+    <div class="slide-inner slide-content text-center">
+      <div>
+        <span class="font-label-sm text-label-sm text-primary tracking-widest uppercase mb-4 block">Your Journey</span>
+        <h2 class="font-headline-lg text-display-lg-mobile md:text-headline-lg mb-4">From First Call to <span class="text-primary">Living It</span></h2>
+        <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-2xl mx-auto mb-12">Three simple steps to transform your space.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto">
+        <div class="text-center">
+          <div class="w-20 h-20 md:w-24 md:h-24 mx-auto bg-primary/10 rounded-3xl flex items-center justify-center mb-6 relative anim-float">
+            <span class="material-symbols-outlined text-primary text-4xl md:text-5xl">edit_note</span>
+            <div class="absolute -top-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-sm font-bold text-obsidian-base">1</div>
+          </div>
+          <h3 class="font-headline-md text-headline-md mb-3 text-white">Discovery Call</h3>
+          <p class="text-on-surface-variant text-body-md max-w-xs mx-auto">We understand your space, your needs, and your vision. No pressure, just a conversation.</p>
+        </div>
+        <div class="text-center relative">
+          <div class="w-20 h-20 md:w-24 md:h-24 mx-auto bg-primary/10 rounded-3xl flex items-center justify-center mb-6 relative anim-float" style="animation-delay:0.8s">
+            <span class="material-symbols-outlined text-primary text-4xl md:text-5xl">design_services</span>
+            <div class="absolute -top-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-sm font-bold text-obsidian-base">2</div>
+          </div>
+          <h3 class="font-headline-md text-headline-md mb-3 text-white">Design &amp; Install</h3>
+          <p class="text-on-surface-variant text-body-md max-w-xs mx-auto">We craft a bespoke plan, install everything, and leave your space spotless.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-20 h-20 md:w-24 md:h-24 mx-auto bg-primary/10 rounded-3xl flex items-center justify-center mb-6 relative anim-float" style="animation-delay:1.6s">
+            <span class="material-symbols-outlined text-primary text-4xl md:text-5xl">rocket_launch</span>
+            <div class="absolute -top-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-sm font-bold text-obsidian-base">3</div>
+          </div>
+          <h3 class="font-headline-md text-headline-md mb-3 text-white">You're Live</h3>
+          <p class="text-on-surface-variant text-body-md max-w-xs mx-auto">We walk you through your new home. After that, it just works — day after day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: Features -->
+  <section class="slide" data-index="5">
+    <div class="slide-inner slide-content text-center">
+      <div>
+        <span class="font-label-sm text-label-sm text-secondary tracking-widest uppercase mb-4 block">What You Get</span>
+        <h2 class="font-headline-lg text-display-lg-mobile md:text-headline-lg mb-4">Everything <span class="text-secondary">Included</span></h2>
+        <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-2xl mx-auto mb-12">Every package comes with the full NeuraMesh experience.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-gutter max-w-4xl mx-auto">
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">directions_run</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Motion Intelligence</h4><p class="text-xs text-on-surface-variant">Sensors that never miss your presence.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">thermostat</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Climate Control</h4><p class="text-xs text-on-surface-variant">Cozy adaptive temperatures, room by room.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">lightbulb</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Adaptive Lighting</h4><p class="text-xs text-on-surface-variant">Warm at night, bright when you work.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">blinds</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Smart Curtains</h4><p class="text-xs text-on-surface-variant">Open with the sun, close with your voice.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">lock</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Smart Locks</h4><p class="text-xs text-on-surface-variant">Keyless entry with geofenced auto-lock.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">mic</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Voice Control</h4><p class="text-xs text-on-surface-variant">Works with Google, Alexa, and Siri.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">location_searching</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Geofencing</h4><p class="text-xs text-on-surface-variant">Your home preps itself as you arrive.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">layers</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Backward Compatible</h4><p class="text-xs text-on-surface-variant">Works with your existing switches.</p></div>
+        </div>
+        <div class="glass-panel p-5 md:p-6 rounded-2xl flex items-center gap-4 text-left">
+          <div class="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined text-primary text-xl">cloud_upload</span></div>
+          <div><h4 class="font-headline-md text-white text-sm mb-0.5">Auto Backup</h4><p class="text-xs text-on-surface-variant">Periodic backups for easy recovery.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: Compatibility -->
+  <section class="slide" data-index="6">
+    <div class="slide-inner slide-content text-center max-w-3xl mx-auto">
+      <span class="font-label-sm text-label-sm text-primary tracking-widest uppercase mb-4 block">Works With Everything You Own</span>
+      <h2 class="font-headline-lg text-display-lg-mobile md:text-headline-lg mb-4">No Ecosystem <span class="text-primary">Lock-In</span></h2>
+      <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-xl mx-auto mb-10">NeuraMesh bridges every major smart home platform. Use what you already have.</p>
+      <div class="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Google Home</div>
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Amazon Alexa</div>
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Apple Siri</div>
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Zigbee</div>
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Matter</div>
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Home Assistant</div>
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Z-Wave</div>
+        <div class="glass-panel px-5 py-3 rounded-full text-sm flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span>Infrared / RF</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: Testimonials -->
+  <section class="slide" data-index="7">
+    <div class="slide-inner slide-content text-center">
+      <div>
+        <span class="font-label-sm text-label-sm text-secondary tracking-widest uppercase mb-4 block">Real Homes, Real Stories</span>
+        <h2 class="font-headline-lg text-display-lg-mobile md:text-headline-lg mb-12">What Our <span class="text-secondary">Clients</span> Say</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-gutter max-w-4xl mx-auto">
+        <div class="glass-panel p-6 md:p-8 rounded-2xl text-left">
+          <div class="flex gap-1 mb-4"><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span></div>
+          <p class="text-body-md text-on-surface-variant mb-6 italic">"Our entire 3BHK responds to us without a single tap. Guests think it's magic — and I just smile."</p>
+          <div class="flex items-center gap-3 pt-4 border-t border-white/5">
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">RM</div>
+            <div><p class="font-bold text-sm text-white">Rajesh M.</p><p class="text-xs text-on-surface-variant">Pune, 3BHK Apartment</p></div>
+          </div>
+        </div>
+        <div class="glass-panel p-6 md:p-8 rounded-2xl text-left">
+          <div class="flex gap-1 mb-4"><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span><span class="text-secondary text-lg">★</span></div>
+          <p class="text-body-md text-on-surface-variant mb-6 italic">"I love that everything works even when the internet is down. Finally, a smart home that respects my privacy."</p>
+          <div class="flex items-center gap-3 pt-4 border-t border-white/5">
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">AK</div>
+            <div><p class="font-bold text-sm text-white">Anita K.</p><p class="text-xs text-on-surface-variant">Mumbai, Independent Villa</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: Plans -->
+  <section class="slide" data-index="8">
+    <div class="slide-inner slide-content text-center">
+      <div>
+        <span class="font-label-sm text-label-sm text-primary tracking-widest uppercase mb-4 block">Simple, Transparent</span>
+        <h2 class="font-headline-lg text-display-lg-mobile md:text-headline-lg mb-4">Choose Your <span class="text-primary">Infrastructure</span></h2>
+        <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-2xl mx-auto mb-12">One investment. Lifetime of intelligence. No monthly fees.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-gutter max-w-5xl mx-auto">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl flex flex-col">
+          <h3 class="font-headline-lg text-headline-lg text-white mb-2">Essential</h3>
+          <p class="text-primary text-xs font-label-sm tracking-wide mb-6">The Perfect First Step</p>
+          <ul class="space-y-3 mb-8 flex-grow text-left">
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Motion Intelligence</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Multiple User Profiles</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Smart Climate Control</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Manual Override</span></li>
+          </ul>
+        </div>
+        <div class="glass-panel p-6 md:p-8 rounded-3xl relative overflow-hidden glow-sweep flex flex-col border-primary/20">
+          <div class="absolute top-0 right-0 bg-primary text-obsidian-base px-4 py-1 text-[10px] font-bold rounded-bl-xl tracking-widest uppercase">POPULAR</div>
+          <h3 class="font-headline-lg text-headline-lg text-white mb-2">Elevate</h3>
+          <p class="text-primary text-xs font-label-sm tracking-wide mb-6">Premium Automation</p>
+          <ul class="space-y-3 mb-8 flex-grow text-left">
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Everything in Essential</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Adaptive Lighting</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Security Intelligence</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Priority Support</span></li>
+          </ul>
+        </div>
+        <div class="glass-panel p-6 md:p-8 rounded-3xl flex flex-col">
+          <h3 class="font-headline-lg text-headline-lg text-white mb-2">Elite</h3>
+          <p class="text-primary text-xs font-label-sm tracking-wide mb-6">A Limitless Luxury</p>
+          <ul class="space-y-3 mb-8 flex-grow text-left">
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Everything in Elevate</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Smart Curtains</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Smart Door Locks</span></li>
+            <li class="flex items-center gap-3 text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="text-on-surface-variant">Security Cameras</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: Final CTA -->
+  <section class="slide" data-index="9">
+    <div class="slide-inner slide-content text-center max-w-3xl">
+      <div class="glass-panel p-6 md:p-10 lg:p-16 rounded-[24px] md:rounded-[32px] lg:rounded-[40px] border-primary/10 relative overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-48 md:w-64 h-48 md:h-64 bg-primary/10 blur-[80px] rounded-full pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 md:w-64 h-48 md:h-64 bg-secondary/10 blur-[80px] rounded-full pointer-events-none"></div>
+        <div class="relative z-10">
+          <span class="font-label-sm text-label-sm text-primary tracking-widest uppercase mb-3 md:mb-4 block">Transform Your Reality</span>
+          <h2 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-4 md:mb-6 leading-tight">Your Smart Home is <br class="hidden sm:block"/><span class="text-primary">One Conversation Away</span></h2>
+          <p class="text-on-surface-variant text-body-md md:text-body-lg max-w-xl mx-auto mb-6 md:mb-10">No pressure. No jargon. Just a friendly chat about what's possible for your space.</p>
+          <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center">
+            <a href="https://wa.me/message/ZLBCJCWUCGKDM1" target="_blank" class="bg-primary text-obsidian-base px-10 py-4 rounded-2xl font-bold text-base md:text-lg hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Ping us on WhatsApp
+            </a>
+            <a href="https://neuramesh.in" target="_blank" class="glass-panel px-10 py-4 rounded-2xl font-bold text-base md:text-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2 border-white/10">
+              <span class="material-symbols-outlined text-xl">language</span> Visit Our Website
+            </a>
+            <a href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Meeting+with+NeuraMesh&details=Let%E2%80%99s+connect+to+discuss+smart+home+automation.&location=https://meet.google.com/&add=neurameshindia@gmail.com" target="_blank" class="glass-panel px-10 py-4 rounded-2xl font-bold text-base md:text-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2 border-white/10">
+              <span class="material-symbols-outlined text-xl">calendar_month</span> Schedule a Walkthrough
+            </a>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-6">✨ Free consultation. No commitment. Same-day response.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Navigation controls -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 desktop-nav">
+  <button class="nav-btn" id="prev-slide" aria-label="Previous slide"><span class="material-symbols-outlined text-xl">chevron_left</span></button>
+  <div class="flex items-center gap-2 px-4" id="dots"></div>
+  <button class="nav-btn" id="next-slide" aria-label="Next slide"><span class="material-symbols-outlined text-xl">chevron_right</span></button>
+</div>
+
+<div class="fixed bottom-8 right-8 z-50 text-xs text-on-surface-variant opacity-40 font-label-sm" id="slide-counter"></div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var current = 0;
+  var deck = document.getElementById('deck');
+  var dotsContainer = document.getElementById('dots');
+  var counter = document.getElementById('slide-counter');
+  var isTransitioning = false;
+
+  for(var i = 0; i < total; i++){
+    var dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.addEventListener('click', function(){ goTo(parseInt(this.dataset.index)); });
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(idx){
+    if(idx === current || isTransitioning || idx < 0 || idx >= total) return;
+    isTransitioning = true;
+    slides[current].classList.remove('active');
+    current = idx;
+    deck.style.transform = 'translateY(-' + (current * 100) + 'vh)';
+    slides[current].classList.add('active');
+    updateNav();
+    setTimeout(function(){ isTransitioning = false; }, 800);
+  }
+
+  function updateNav(){
+    document.querySelectorAll('.dot').forEach(function(d, i){
+      d.className = 'dot' + (i === current ? ' active' : '');
+    });
+    counter.textContent = (current + 1) + ' / ' + total;
+  }
+
+  function next(){ goTo(current + 1); }
+  function prev(){ goTo(current - 1); }
+
+  document.getElementById('next-slide').addEventListener('click', next);
+  document.getElementById('prev-slide').addEventListener('click', prev);
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+  });
+
+  var wheelTimeout = false;
+  document.addEventListener('wheel', function(e){
+    var slide = slides[current];
+    var isScrollable = slide.scrollHeight > slide.clientHeight + 2;
+    var atBottom = slide.scrollTop >= slide.scrollHeight - slide.clientHeight - 1;
+    var atTop = slide.scrollTop <= 1;
+
+    if (e.deltaY > 0) {
+      if (isScrollable && !atBottom) return;
+    } else {
+      if (isScrollable && !atTop) return;
+    }
+
+    if(wheelTimeout || isTransitioning) return;
+    wheelTimeout = true;
+    setTimeout(function(){ wheelTimeout = false; }, 900);
+    if(e.deltaY > 0) next(); else prev();
+  }, { passive: true });
+
+  var touchStartY = 0;
+  var touchStartScrollTop = 0;
+  document.addEventListener('touchstart', function(e){
+    touchStartY = e.changedTouches[0].screenY;
+    touchStartScrollTop = slides[current].scrollTop;
+  });
+  document.addEventListener('touchend', function(e){
+    var slide = slides[current];
+    var scrollDiff = Math.abs(slide.scrollTop - touchStartScrollTop);
+    if(scrollDiff > 10) return;
+    var diff = touchStartY - e.changedTouches[0].screenY;
+    if(Math.abs(diff) > 50){ diff > 0 ? next() : prev(); }
+  });
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest('a') || e.target.closest('.nav-btn') || e.target.closest('.dot')) return;
+    var rect = document.body.getBoundingClientRect();
+    e.clientX > rect.width / 2 ? next() : prev();
+  });
+
+  updateNav();
+})();
+</script>
+</body></html>
